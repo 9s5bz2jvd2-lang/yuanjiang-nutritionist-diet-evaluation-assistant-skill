@@ -25,12 +25,13 @@ I am learning to use AI for nutrition science communication. Feedback, suggestio
 3. 每日饮食模式分析
 4. 热量与三大宏量营养素趋势粗估
 5. DRIs 2023 差距评估（资料足够且参考值已核验时）
-6. 主要饮食问题与风险分级
-7. 营养师内部分析总结
-8. 可执行干预建议
-9. 可转述给客户的话术
-10. 趋势图数据与作图建议
-11. 可视化 brief（用于长图、PPT、客户报告等）
+6. B-limited 食物成分查表：当有“食物 + 可食部克数”时，可计算能量、蛋白质、脂肪、碳水、膳食纤维、维A、B1、B2、烟酸、维E、钠、钙、铁、维C、胆固醇
+7. 主要饮食问题与风险分级
+8. 营养师内部分析总结
+9. 可执行干预建议
+10. 可转述给客户的话术
+11. 趋势图数据与作图建议
+12. 可视化 brief（用于长图、PPT、客户报告等）
 
 ## 定位
 
@@ -48,12 +49,17 @@ I am learning to use AI for nutrition science communication. Feedback, suggestio
 - `assets/trend-chart-data-template.csv`：趋势图数据表模板。
 - `assets/visual-brief-template.md`：可视化 brief 模板。
 - `assets/dri2023-*.csv`：DRIs 2023 相关模板/草案数据。
+- `assets/food-composition-data/`：B-limited 食物成分查表数据与来源清单。
+- `reference/food-composition-data/`：食物成分表原文对照、全网交叉验证、查表换算规则。
 - `reference/`：计算设计、来源分层、外部参考融合记录。
 
 ## 重要说明
 
 - 当前内置 DRIs 成人核心值为 `verified_draft` 草案，来自公开资料抽取后整理，仍需人工二次校对；不可当作最终权威全集。
-- DRIs 2023 是“参考摄入量”对照，不是食物营养成分数据库。实际计算仍需要食物重量估计、食物成分表、包装营养标签、烹调损失和营养师复核。
+- DRIs 2023 是“参考摄入量”对照，不是食物营养成分数据库；当前已额外接入一份 B-limited 食物成分表数据，但该数据经交叉验证高度推断为 1991 版《中国食物成分表》子集/简表抄录，非 2018 标准版第 6 版、非现行官方完整数据库。
+
+- 当前 B-limited 食物成分数据可用于 demo / 营养师内部粗估：能计算能量、蛋白质、脂肪、碳水、膳食纤维、维A、B1、B2、烟酸、维E、钠、钙、铁、维C、胆固醇。
+- 当前 B-limited 食物成分数据不覆盖钾、磷、镁、锌、硒、铜、锰、碘、氟等多数常量/微量元素；如需完整计算，应接入合规的《中国食物成分表 标准版 第6版》等来源。
 - 低置信度饮食记录不应被包装成精确营养计算。
 - 本 skill 不替代营养师专业判断、临床诊断或个体化治疗处方。
 

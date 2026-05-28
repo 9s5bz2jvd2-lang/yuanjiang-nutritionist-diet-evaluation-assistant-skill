@@ -2,8 +2,8 @@
 name: 圆酱的营养师膳食评价助手skill
 description: |
   圆酱的营养师膳食评价助手skill。当营养师/营养团队需要处理客户三日饮食文字、聊天打卡、表格饮食记录、语音转文字后的饮食描述，或零散、不规范、不完整的饮食反馈时触发。用于把客户混乱输入整理成三日饮食结构化表格，供营养师分析每日饮食模式、粗估热量和宏量营养素趋势并标注置信度；在资料足够时按内置 DRIs 2023 参考摄入量框架输出能量、宏量营养素、维生素、矿物质与参考值的差距；识别饮食问题与风险点，生成营养师内部判断材料、追问清单、可执行干预建议、趋势图数据，以及可转述给客户的温和话术。此 skill 面向专业人员使用，不是普通人自助诊断/自助开方工具；强调“不确定就标注假设/追问”，不把粗估包装成精确营养计算，不替代营养师专业判断、临床诊断或个体化治疗处方。
-version: 1.5.0
-author: 王润圆（Runyuan Wang）+ 灵台AI（LingTai AI）制作
+version: 1.6.0
+author: 润圆 + mimo-2-5-pro
 license: MIT
 tags: [nutrition, diet-record, three-day-record, meal-log, behavior-analysis, dri2023, nutrient-calculation, personalization, macro-calculation, trend-chart, visualization-brief, chinese]
 ---
@@ -27,6 +27,16 @@ tags: [nutrition, diet-record, three-day-record, meal-log, behavior-analysis, dr
 - **客户层**：由营养师筛选后可转述给客户的温和话术、趋势图图注和 1–3 个小行动。
 - **禁止口径**：不要把输出写成普通人自助诊断、自助治疗或自助极端减重方案；不要绕过营养师直接给客户下医学/临床结论。
 
+## 数据能力边界与版本差异提醒
+
+本 skill 当前已内置 **DRIs 2023 参考摄入量框架**，并已接入一份从圆酱提供的腾讯文档 PDF《中国食物成分表》抽取、抽样对照通过的 **Section A 食物成分主表（1284 条，B-limited）**。经 Claude Code 分神全网交叉验证（见 `reference/food-composition-data/web_crosscheck.md`），这份 PDF **高度推断为 1991 版《中国食物成分表》的子集/简表抄录**，不是 2018 标准版第 6 版，也不是现行官方完整电子数据库；且不含钾、磷、镁、锌、硒、铜、锰、碘、氟等多数常量/微量元素。因此必须区分能力等级：
+
+- **A 级（当前默认）**：结构化整理、饮食模式分析、追问清单、粗估区间、趋势图、证据边界说明。
+- **B-limited 级（当前已接入）**：可基于 `assets/food-composition-data/china_food_composition_pdf_section_a_validated_20260528.csv` 对“食物 + 可食部克数”进行查表换算，覆盖能量、蛋白质、脂肪、碳水化合物、膳食纤维、维生素A、B1、B2、烟酸、维生素E、钠、钙、铁、维生素C、胆固醇；必须注明“腾讯文档 PDF 抽取，Section A 已抽样对照；全网交叉验证推断为 1991 版谱系子集/简表抄录，非 2018 第6版，非官方完整最新版”。
+- **B-full 级（未来有完整食物成分数据时）**：可进一步覆盖钾、磷、镁、锌、硒、铜、锰、碘、氟等更多常量/微量元素，并做更完整 DRIs 差距评估；但仍需注明数据来源、版本与置信度。
+- **C 级（无数据库时）**：不可假装精确计算维生素/矿物质摄入量；只能做粗估和待核验提示。
+
+使用中必须保留 **数据源版本字段**，至少包括：资料版本/年份、来源链接、采集日期、是否最新版本、哪些字段已核验。当使用腾讯文档/网页/打包资料时，**优先取最新版本**，并注明版本差异；不要把不同年份/不同版本的食物成分数据混算。
 
 ---
 
@@ -175,12 +185,15 @@ tags: [nutrition, diet-record, three-day-record, meal-log, behavior-analysis, dr
 
 当使用者明确要求“营养素计算 / 与参考摄入量比较 / DRIs 对照”，且记录中有足够食物与份量线索时，启用本层。先读：`reference/nutrient-calculation-design.md`。
 
+当前可用的食物成分数据（B-limited）：先读 `reference/food-composition-data/README.md`、`validation_report.md`、`web_crosscheck.md` 和 `lookup-and-calculation.md`；主查表文件为 `assets/food-composition-data/china_food_composition_pdf_section_a_validated_20260528.csv`，辅助规范化文件为 `assets/food-composition-data/cn_food_composition_1991_v0.jsonl`。使用时只对该表覆盖字段给出数值；对未覆盖字段（如钾、磷、镁、锌、硒、铜、锰、碘、氟等）明确写“本数据源未覆盖，需补充完整食物成分表后才能计算”。
+
 执行顺序：
 
 1. 将三日记录拆成食物项与估计可食部克数；使用 `assets/food-intake-estimate-template.csv` 记录假设。
-2. 调用或填写食物成分数据，估算能量、蛋白质、脂肪、碳水化合物、膳食纤维、常用维生素和矿物质。
-3. 按年龄、性别、孕哺/特殊状态匹配 `assets/dri2023-core-template.csv` 中已核验的 DRIs 2023 值。
-4. 使用 `assets/nutrient-gap-output-template.md` 输出三日平均摄入、DRIs 类型/参考值、差值、达标比例、状态和置信度。
+2. 调用或填写食物成分数据：若匹配到当前 B-limited 食物成分表，则按每 100g 可食部换算；若食物名、熟重/生重、可食部或份量不清，必须降级为区间估算或追问。
+3. 换算公式：`摄入量 = 食物成分表每100g数值 × 估计可食部克数 / 100`；若记录是带皮/带骨/带壳重量，先用“可食部比例”修正并标注假设。
+4. 按年龄、性别、孕哺/特殊状态匹配 `assets/dri2023-core-template.csv` 中已核验的 DRIs 2023 值。
+5. 使用 `assets/nutrient-gap-output-template.md` 输出三日平均摄入、DRIs 类型/参考值、差值、达标比例、状态和置信度；同时列出数据源、版本待核状态、未覆盖营养素清单。
 
 状态表达必须保守：
 
