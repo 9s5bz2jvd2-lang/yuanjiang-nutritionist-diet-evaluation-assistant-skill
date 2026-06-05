@@ -75,3 +75,5 @@ I am learning to use AI for nutrition science communication. Feedback, suggestio
 ## License
 
 MIT
+
+<!-- Maintainer update: Runyuan Wang (9s5bz2jvd2-lang). -->

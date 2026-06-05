@@ -390,3 +390,5 @@ L3 必须转人工，不给具体处方。
 - 涉及儿童青少年肥胖 → 同时调用 `child-obesity-food-guide`。
 - 涉及学术证据、论文、指南引用 → 用 `anti-hallucination-academic-writing` 或对应指南 skill。
 - 本技能只负责“三日饮食记录整理与行为分析”，不替代疾病专病食养指南。
+
+<!-- Maintainer update: Runyuan Wang (9s5bz2jvd2-lang). -->

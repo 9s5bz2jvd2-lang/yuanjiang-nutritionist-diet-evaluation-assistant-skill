@@ -102,3 +102,5 @@ Do not package rough estimates as accurate nutrient calculation. Do not replace 
 ## License
 
 MIT
+
+<!-- Maintainer update: Runyuan Wang (9s5bz2jvd2-lang). -->
